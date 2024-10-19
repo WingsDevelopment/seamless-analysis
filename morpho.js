@@ -22,18 +22,16 @@ const poolNames = {
   [wsuperOETHb_WETH]: "wsuperOETHb/WETH",
 };
 
-// Function to convert timestamp to a readable date
 function timestampToDate(ts) {
   const date = new Date(ts * 1000);
-  return date.toISOString().split("T")[0]; // Returns date in YYYY-MM-DD format
+  return date.toISOString().split("T")[0];
 }
 
-// Function to generate a markdown table for historical APYs
 function generateMarkdownTableForPool(poolName, historicalData) {
-  const [collateralToken, loanToken] = poolName.split("/"); // Separate collateral and loan tokens
+  const [collateralToken, loanToken] = poolName.split("/");
   let markdownTable = `\n`;
   markdownTable += `**Collateral Token**: ${collateralToken}, **Loan Token**: ${loanToken}\n\n`;
-  markdownTable += `| Date       | APY (%) |\n|------------|---------|\n`; // Table header goes here
+  markdownTable += `| Date       | APY (%) |\n|------------|---------|\n`;
 
   let sumApy = 0;
   let count = 0;
@@ -63,13 +61,11 @@ function generateMarkdownTableForPool(poolName, historicalData) {
   };
 }
 
-// Function to generate markdown for all pools and the summary table
 function generateMarkdownForAllPools(dataArray) {
   let markdownOutput = "";
-  const summaryMatrix = {}; // To collect data for the final summary table
-  const assets = ["WETH", "USDC", "cbBTC", "AERO", "wsuperOETHb"]; // Assets in the matrix
+  const summaryMatrix = {};
+  const assets = ["WETH", "USDC", "cbBTC", "AERO", "wsuperOETHb"];
 
-  // Initialize the summary matrix with placeholders
   assets.forEach((collateral) => {
     summaryMatrix[collateral] = {};
     assets.forEach((borrow) => {
@@ -86,13 +82,11 @@ function generateMarkdownForAllPools(dataArray) {
 
     markdownOutput += markdownTable;
 
-    // Fill the summary matrix with data from the current pool
     if (averageApy !== null && summaryMatrix[collateralToken]) {
-      summaryMatrix[collateralToken][loanToken] = `${averageApy.toFixed(2)}%`; // Mark this relationship with average APY
+      summaryMatrix[collateralToken][loanToken] = `${averageApy.toFixed(2)}%`;
     }
   });
 
-  // Generate the summary matrix table with actual APYs
   let summaryTable = `\n### Assets Relationship Matrix - 2 month average APY\n\n`;
   summaryTable += `| collateral/loan | WETH       | USDC       | cbBTC      | AERO       | wsuperOETHb |\n`;
   summaryTable += `|----------------|------------|------------|------------|------------|-------------|\n`;
@@ -110,11 +104,9 @@ function generateMarkdownForAllPools(dataArray) {
   return markdownOutput;
 }
 
-// Main function to read data and generate markdown
 function main() {
   const markdown = generateMarkdownForAllPools(dataArray);
 
-  // Output markdown
   console.log(markdown);
 }
 

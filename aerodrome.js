@@ -1,4 +1,4 @@
-const dataArray = require("./data.json");
+const dataArray = require("./aerodrome-data.json");
 
 function calculateVolatility(apyArray) {
   let differences = [];
