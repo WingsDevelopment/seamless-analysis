@@ -22,15 +22,24 @@ const poolNames = {
   [wsuperOETHb_WETH]: "wsuperOETHb/WETH",
 };
 
+// Function to convert timestamp to a readable date
 function timestampToDate(ts) {
   const date = new Date(ts * 1000);
   return date.toISOString().split("T")[0];
 }
 
-function generateMarkdownTableForPool(poolName, historicalData) {
+// Function to convert LLTV value from 16-decimal format to a percentage
+function convertLltvToPercentage(lltv) {
+  if (!lltv) return "N/A";
+  return (BigInt(lltv) / BigInt(10 ** 16)).toString() + "%"; // Convert to percentage
+}
+
+// Function to generate a markdown table for historical APYs
+function generateMarkdownTableForPool(poolName, historicalData, lltv) {
   const [collateralToken, loanToken] = poolName.split("/");
   let markdownTable = `\n`;
   markdownTable += `**Collateral Token**: ${collateralToken}, **Loan Token**: ${loanToken}\n\n`;
+  markdownTable += `**LLTV: ${convertLltvToPercentage(lltv)}**\n\n`; // Add LLTV below the tokens
   markdownTable += `| Date       | APY (%) |\n|------------|---------|\n`;
 
   let sumApy = 0;
@@ -61,6 +70,7 @@ function generateMarkdownTableForPool(poolName, historicalData) {
   };
 }
 
+// Function to generate markdown for all pools and the summary table
 function generateMarkdownForAllPools(dataArray) {
   let markdownOutput = "";
   const summaryMatrix = {};
@@ -76,9 +86,10 @@ function generateMarkdownForAllPools(dataArray) {
   dataArray.forEach((dataObject) => {
     const uniqueKey = dataObject.data.test.uniqueKey;
     const historicalData = dataObject.data.test.historicalState.weeklyBorrowApy;
+    const lltv = dataObject.data.test.lltv; // Fetch the LLTV value
     const poolName = poolNames[uniqueKey] || "Unknown Pool";
     const { markdownTable, averageApy, collateralToken, loanToken } =
-      generateMarkdownTableForPool(poolName, historicalData);
+      generateMarkdownTableForPool(poolName, historicalData, lltv);
 
     markdownOutput += markdownTable;
 
@@ -104,6 +115,7 @@ function generateMarkdownForAllPools(dataArray) {
   return markdownOutput;
 }
 
+// Main function to read data and generate markdown
 function main() {
   const markdown = generateMarkdownForAllPools(dataArray);
 
